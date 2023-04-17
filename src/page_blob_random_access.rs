@@ -65,6 +65,11 @@ impl PageBlobRandomAccess {
         let mut write_access = self.inner.lock().await;
         write_access.resize(pages_amount).await
     }
+
+    pub async fn download(&self) -> Result<Vec<u8>, AzureStorageError> {
+        let access = self.inner.lock().await;
+        access.page_blob.download().await
+    }
 }
 
 #[async_trait::async_trait]
