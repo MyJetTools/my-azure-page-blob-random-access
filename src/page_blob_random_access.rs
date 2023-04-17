@@ -26,7 +26,7 @@ impl PageBlobRandomAccess {
         }
     }
 
-    pub async fn get_pages_amount_in_blob(&mut self) -> Result<usize, AzureStorageError> {
+    pub async fn get_blob_size(&mut self) -> Result<usize, AzureStorageError> {
         if self.page_blob_size.is_some() {
             return Ok(self.page_blob_size.unwrap());
         }
@@ -51,7 +51,7 @@ impl PageBlobRandomAccess {
         start_pos: usize,
         size: usize,
     ) -> Result<ReadChunk, PageBlobRandomAccessError> {
-        let available_pages_amount = self.get_pages_amount_in_blob().await?;
+        let available_pages_amount = self.get_blob_size().await? / BLOB_PAGE_SIZE;
 
         let offsets = RandomAccessPageOffsets::new(start_pos, size);
 
@@ -78,7 +78,7 @@ impl PageBlobRandomAccess {
         start_pos: usize,
         payload: &[u8],
     ) -> Result<(), PageBlobRandomAccessError> {
-        let available_pages_amount = self.get_pages_amount_in_blob().await?;
+        let available_pages_amount = self.get_blob_size().await? / BLOB_PAGE_SIZE;
 
         let offsets = RandomAccessPageOffsets::new(start_pos, payload.len());
 
