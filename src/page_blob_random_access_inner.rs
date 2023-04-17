@@ -38,7 +38,7 @@ impl PageBlobRandomAccessInner {
         return Ok(props.blob_size);
     }
 
-    async fn resize(&mut self, pages_amount: usize) -> Result<(), AzureStorageError> {
+    pub async fn resize(&mut self, pages_amount: usize) -> Result<(), AzureStorageError> {
         self.page_blob.resize(pages_amount).await?;
 
         self.page_blob_size = Some(pages_amount * BLOB_PAGE_SIZE);

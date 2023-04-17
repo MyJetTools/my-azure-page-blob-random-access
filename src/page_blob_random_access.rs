@@ -57,12 +57,13 @@ impl PageBlobRandomAccess {
     }
 
     pub async fn create_container_if_not_exists(&self) -> Result<(), AzureStorageError> {
-        let write_access: tokio::sync::MutexGuard<PageBlobRandomAccessInner> =
-            self.inner.lock().await;
-        write_access
-            .page_blob
-            .create_container_if_not_exists()
-            .await
+        let access = self.inner.lock().await;
+        access.page_blob.create_container_if_not_exists().await
+    }
+
+    pub async fn resize(&self, pages_amount: usize) -> Result<(), AzureStorageError> {
+        let mut write_access = self.inner.lock().await;
+        write_access.resize(pages_amount).await
     }
 }
 
