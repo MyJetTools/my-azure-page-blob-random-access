@@ -1,55 +1,72 @@
 use rust_extensions::AsSliceOrVec;
 
-pub struct BinaryPayloadBuilder {
-    data: Vec<u8>,
+pub struct BinaryPayloadBuilder<'s> {
+    data: &'s mut [u8],
+    offset: usize,
 }
 
-impl BinaryPayloadBuilder {
-    pub fn new() -> Self {
-        Self { data: Vec::new() }
-    }
-
-    pub fn new_with_capacity(capacity: usize) -> Self {
-        Self {
-            data: Vec::with_capacity(capacity),
-        }
+impl<'s> BinaryPayloadBuilder<'s> {
+    pub fn new(data: &'s mut [u8]) -> Self {
+        Self { data, offset: 0 }
     }
 
     pub fn write_u8(&mut self, value: u8) {
-        self.data.push(value);
+        let value_to_write = self.data.get_mut(self.offset).unwrap();
+        *value_to_write = value;
+        self.offset += 1;
     }
 
     pub fn write_i8(&mut self, value: i8) {
-        self.data.push(value as u8);
+        let value_to_write = self.data.get_mut(self.offset).unwrap();
+        *value_to_write = value as u8;
+        self.offset += 1;
     }
 
     pub fn write_u16(&mut self, value: u16) {
-        self.data.extend_from_slice(value.to_le_bytes().as_slice());
+        const SIZE: usize = 2;
+        let value_to_write = &mut self.data[self.offset..self.offset + SIZE];
+        value_to_write.copy_from_slice(value.to_le_bytes().as_slice());
+        self.offset += SIZE;
     }
 
     pub fn write_i16(&mut self, value: i16) {
-        self.data.extend_from_slice(value.to_le_bytes().as_slice());
+        const SIZE: usize = 2;
+        let value_to_write = &mut self.data[self.offset..self.offset + SIZE];
+        value_to_write.copy_from_slice(value.to_le_bytes().as_slice());
+        self.offset += SIZE;
     }
 
     pub fn write_u32(&mut self, value: u32) {
-        self.data.extend_from_slice(value.to_le_bytes().as_slice());
+        const SIZE: usize = 4;
+        let value_to_write = &mut self.data[self.offset..self.offset + SIZE];
+        value_to_write.copy_from_slice(value.to_le_bytes().as_slice());
+        self.offset += SIZE;
     }
 
     pub fn write_i32(&mut self, value: i32) {
-        self.data.extend_from_slice(value.to_le_bytes().as_slice());
+        const SIZE: usize = 4;
+        let value_to_write = &mut self.data[self.offset..self.offset + SIZE];
+        value_to_write.copy_from_slice(value.to_le_bytes().as_slice());
+        self.offset += SIZE;
     }
 
     pub fn write_u64(&mut self, value: u64) {
-        self.data.extend_from_slice(value.to_le_bytes().as_slice());
+        const SIZE: usize = 8;
+        let value_to_write = &mut self.data[self.offset..self.offset + SIZE];
+        value_to_write.copy_from_slice(value.to_le_bytes().as_slice());
+        self.offset += SIZE;
     }
 
     pub fn write_i64(&mut self, value: i64) {
-        self.data.extend_from_slice(value.to_le_bytes().as_slice());
+        const SIZE: usize = 8;
+        let value_to_write = &mut self.data[self.offset..self.offset + SIZE];
+        value_to_write.copy_from_slice(value.to_le_bytes().as_slice());
+        self.offset += SIZE;
     }
 }
 
-impl<'s> Into<AsSliceOrVec<'s, u8>> for BinaryPayloadBuilder {
+impl<'s> Into<AsSliceOrVec<'s, u8>> for BinaryPayloadBuilder<'s> {
     fn into(self) -> AsSliceOrVec<'s, u8> {
-        AsSliceOrVec::AsVec(self.data)
+        AsSliceOrVec::AsSlice(self.data)
     }
 }
