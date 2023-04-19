@@ -2,6 +2,7 @@ use my_azure_storage_sdk::{
     page_blob::{AzurePageBlobStorage, PageBlobAbstractions},
     AzureStorageError,
 };
+use rust_extensions::AsSliceOrVec;
 use tokio::sync::Mutex;
 
 use crate::{PageBlobRandomAccessError, PageBlobRandomAccessInner, ReadChunk};
@@ -39,13 +40,14 @@ impl PageBlobRandomAccess {
         write_access.read(start_pos, size).await
     }
 
-    pub async fn write(
+    pub async fn write<'s>(
         &self,
         start_pos: usize,
-        payload: &[u8],
+        payload: impl Into<AsSliceOrVec<'s, u8>>,
     ) -> Result<(), PageBlobRandomAccessError> {
+        let payload = payload.into();
         let mut write_access = self.inner.lock().await;
-        write_access.write(start_pos, payload).await
+        write_access.write(start_pos, payload.as_slice()).await
     }
 
     pub async fn create_blob_if_not_exists(

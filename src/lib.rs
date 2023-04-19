@@ -1,8 +1,10 @@
+mod binary_payload_builder;
 mod errors;
 mod page_blob_random_access;
 mod page_blob_random_access_inner;
 mod random_access_page_offsets;
 mod read_chunk;
+pub use binary_payload_builder::*;
 pub use errors::PageBlobRandomAccessError;
 pub use page_blob_random_access::PageBlobRandomAccess;
 pub use page_blob_random_access::*;
