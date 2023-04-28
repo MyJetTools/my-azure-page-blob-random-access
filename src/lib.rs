@@ -1,11 +1,9 @@
 mod errors;
 mod page_blob_random_access;
-mod page_blob_random_access_inner;
 mod random_access_page_offsets;
 mod read_chunk;
 pub use errors::PageBlobRandomAccessError;
 pub use page_blob_random_access::PageBlobRandomAccess;
 pub use page_blob_random_access::*;
-use page_blob_random_access_inner::*;
 pub use random_access_page_offsets::*;
 pub use read_chunk::*;
